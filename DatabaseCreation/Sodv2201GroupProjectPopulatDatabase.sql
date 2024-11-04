@@ -2,7 +2,7 @@
 
 
 USE Sodv2201GroupProject
-GO;
+GO
 
 INSERT INTO Terms (Term) VALUES
 ('Fall'),
@@ -13,7 +13,7 @@ INSERT INTO Terms (Term) VALUES
 INSERT INTO Departments (Department) VALUES
 ('Software Development');
 
-INSERT INTO Programs (DepartmentID, Program, TermID, StartDate, EndDate, Length, Fee, Code) VALUES
+INSERT INTO Programs (DepartmentID, Program, TermID, StartDate, EndDate, Length, Description, Fee, Code) VALUES
 (1, 'Diploma', 1, '2024-09-04', '2024-12-15', '6 months', 'This 2 year diploma course teaches students everything they need to gain a junior developer job. Starting with programming foundation and fundamentals to building full stack web apps, games, and more by completion', 
 50000, 23523),
 (1, 'Certificate', 1, '2024-09-04', '2024-12-15', '6 months', 'Our certificate program offers students a fast track into the world of programming. Focusing on the basics and fundamentals.', 
@@ -35,7 +35,7 @@ INSERT INTO Courses (CourseName, CourseCode, TermID, StartDate, EndDate, Departm
 ('Sodv', 3203, 1, '2024-09-04', '2024-12-15', 1, 3, 'Teachers learners the basics of using Unreal Engine.');
 
 INSERT INTO Users (FirstName, LastName, Email, Phone, Birthday, DepartmentID, ProgramID, TermID, UserName, Password, Status) VALUES
-('Teeny', 'Tine', 'admin@gmail.com', '123-456-1234', '1900-10-10', 1, NULL, NULL, 'TT', '123', 'Admin'),
+('Teeny', 'Tine', 'admin@gmail.com', '123-456-1234', '1900-10-10', 1, 1, 1, 'TT', '123', 'Admin'),
 ('Scram', 'Biss', 'scramb@gmail.com', '133-556-1739', '2010-06-10', 1, 1, 1, 'Scramb', '123', 'Student'),
 ('Rosa', 'Diaz', 'rosadiaz@gmail.com', '543-555-8643', '1990-02-15', 1, 3, 2, 'RD', '123', 'Student'),
 ('Michael', 'Scott', 'mscott@gmail.com', '434-325-9809', '1970-07-24', 1, 2, 3, 'Mscott', '123', 'Student');
