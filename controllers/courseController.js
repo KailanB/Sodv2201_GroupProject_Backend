@@ -18,7 +18,18 @@ const connectToSQL = async () => {
 
 export const getCourses = async (req, res) => {
 
-    // select logic here
+    try {
+        await connectToSQL();
+        const result = await sql.query('SELECT * FROM Courses');
+        console.log(result);
+        // can we add a res.status here or not necessary?
+        res.json(result.recordset);
+    }
+    catch (err) {
+
+        console.error('Error retrieving courses: ' + err);
+        res.status(500).json({error: 'Failed to retrieve courses data'});
+    }
 
 };
 
