@@ -31,14 +31,21 @@ app.use(express.urlencoded({ extended: true}));
 // this is from the example setup
 // app.use('/api/v1', userRoutes);
 // I am not sure why it is written /api/v1. Gonna ask.
-app.use('/', userRoutes);
-app.use('/', courseRoutes);
-app.use('/', programRoutes);
+app.use('/api', userRoutes);
+app.use('/api', courseRoutes);
+app.use('/api', programRoutes);
 
+// app.get('/courses', (req, res) => {
+//     res.send('test3');
+// });
 
-app.get('/', (req, res) => {
- res.send('Hello, Class!');
-});
+// app.get('/api/test', (req, res) => {
+//     res.send('test5');
+// });
+
+// app.get('/', (req, res) => {
+//  res.send('Hello, Class!');
+// });
 
 
 app.listen(port, () => {
