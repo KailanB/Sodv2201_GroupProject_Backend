@@ -3,7 +3,7 @@ dotenv.config();
 
 
 
-/*
+
 // copy pasted this from the example dbConfig file.
 // we can uncomment and update as necessary once we create our own DB
 
@@ -25,4 +25,3 @@ export const config = {
   },
 };
 
-*/
