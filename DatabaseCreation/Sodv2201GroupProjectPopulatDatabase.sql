@@ -4,7 +4,7 @@
 USE Sodv2201GroupProject
 GO
 
-INSERT INTO Terms (Term) VALUES
+INSERT INTO Terms (Term, StartDate, EndDate) VALUES
 ('Fall', '2024-09-04', '2024-12-15'),
 ('Winter', '2025-01-09', '2025-04-22'),
 ('Spring', '2025-05-04', '2024-07-15'),
@@ -17,12 +17,12 @@ INSERT INTO Status (Status) VALUES
 ('Student'),
 ('Admin');
 
-INSERT INTO Programs (DepartmentID, Credential, TermID, StartDate, EndDate, Length, Description, Fee, Code) VALUES
-(1, 'Diploma', 1, '2024-09-04', '2024-12-15', '6 months', 'This 2 year diploma course teaches students everything they need to gain a junior developer job. Starting with programming foundation and fundamentals to building full stack web apps, games, and more by completion', 
+INSERT INTO Programs (DepartmentID, Credential, StartDate, EndDate, Length, Description, Fee, Code) VALUES
+(1, 'Diploma', '2024-09-04', '2024-12-15', '6 months', 'This 2 year diploma course teaches students everything they need to gain a junior developer job. Starting with programming foundation and fundamentals to building full stack web apps, games, and more by completion', 
 50000, 23523),
-(1, 'Certificate', 1, '2024-09-04', '2024-12-15', '6 months', 'Our certificate program offers students a fast track into the world of programming. Focusing on the basics and fundamentals.', 
+(1, 'Certificate', '2024-09-04', '2024-12-15', '6 months', 'Our certificate program offers students a fast track into the world of programming. Focusing on the basics and fundamentals.', 
 30000, 23524),
-(1, 'Post-Diploma', 1, '2024-09-04', '2024-12-15', '6 months', 'The Post-Diploma program takes a junior developers skills to the next level. Tackling new concepts and algorithms.', 
+(1, 'Post-Diploma', '2024-09-04', '2024-12-15', '6 months', 'The Post-Diploma program takes a junior developers skills to the next level. Tackling new concepts and algorithms.', 
 75000, 23525);
 
 
