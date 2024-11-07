@@ -60,6 +60,7 @@ CREATE TABLE Courses (
 	CourseID INT PRIMARY KEY IDENTITY(1,1),
 	CourseName VARCHAR(50) NOT NULL, 
 	CourseCode INT NOT NULL,
+	TermID INT NOT NULL,
 	ProgramID INT NOT NULL,
 	Description VARCHAR(200),
 
