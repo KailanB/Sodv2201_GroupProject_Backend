@@ -38,7 +38,7 @@ INSERT INTO Courses (CourseName, CourseCode, TermID, ProgramID, Description) VAL
 ('Sodv', 3201, 1,  3, 'Teachers learners advanced and modern web programming concepts.'),
 ('Sodv', 3203, 1,  3, 'Teachers learners the basics of using Unreal Engine.');
 
-INSERT INTO Students (FirstName, LastName, Email, Phone, Birthday, ProgramID, TermID, UserName, Password, Status) VALUES
+INSERT INTO Students (FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, TermID, UserName, Password, Status) VALUES
 ('Teeny', 'Tine', 'admin@gmail.com', '123-456-1234', '1900-10-10', 1, 1, 'TT', '123', 1),
 ('Scram', 'Biss', 'scramb@gmail.com', '133-556-1739', '2010-06-10', 1, 1, 'Scramb', '123', 1),
 ('Rosa', 'Diaz', 'rosadiaz@gmail.com', '543-555-8643', '1990-02-15', 3, 2, 'RD', '123', 1),
