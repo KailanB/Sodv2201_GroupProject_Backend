@@ -21,7 +21,8 @@ export const getCourses = async (req, res) => {
     try {
         await connectToSQL();
         const result = await sql.query('SELECT * FROM Courses');
-        console.log(result);
+        // console.log(result);
+
         // can we add a res.status here or not necessary?
         res.json(result.recordset);
     }
@@ -33,15 +34,13 @@ export const getCourses = async (req, res) => {
 
 };
 
-export const getCoursesOfProgram = async (req, res) => {
-
-    const { program } = req.params;
-    // use req.params.program to find and return program specific courses
-
-};
-
+// all courses a user has registered to
 export const getCoursesOfUser = async (req, res) => {
 
+    // To do
+    // params refers to user Id
+    
+    const { id  } = req.params;
     // use req.params.userId to find and return courses of user
 
 };
@@ -64,5 +63,13 @@ export const deleteCourse = async (req, res) => {
 
     const { id } = req.params;
     // use course id to find course in database and delete
+
+};
+
+
+export const getCoursesOfProgram = async (req, res) => {
+
+    const { program } = req.params;
+    // use req.params.program to find and return program specific courses
 
 };
