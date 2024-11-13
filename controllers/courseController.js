@@ -24,7 +24,7 @@ export const getCourses = async (req, res) => {
         // console.log(result);
 
         // can we add a res.status here or not necessary?
-        res.json(result.recordset);
+        res.status(200).json(result.recordset);
     }
     catch (err) {
 
@@ -36,12 +36,25 @@ export const getCourses = async (req, res) => {
 
 // all courses a user has registered to
 export const getCoursesOfUser = async (req, res) => {
-
-    // To do
-    // params refers to user Id
     
     const { id  } = req.params;
-    // use req.params.userId to find and return courses of user
+    //console.log(id);
+
+    try {
+        await connectToSQL();
+        const result = await sql.query(
+            `SELECT c.CourseID, c.CourseName, c.CourseCode, c.TermID, c.ProgramID, c.Description 
+            FROM Courses c JOIN StudentCourses sc ON sc.CourseId = c.CourseID
+            JOIN Students s ON s.StudentID = sc.StudentID
+            WHERE s.StudentID = ${id}`);
+        // use req.params.userId to find and return courses of user
+        res.status(201).json(result.recordset);
+    }
+    catch (err) {
+
+        console.error('Error retrieving user courses: ' + err);
+        res.status(500).json({error: 'Failed to retrieve student course data'});
+    }
 
 };
 
