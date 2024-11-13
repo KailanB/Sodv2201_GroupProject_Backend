@@ -4,7 +4,7 @@ import { getCourses, getCoursesOfProgram, getCoursesOfUser, createCourse, update
 const router = express.Router();
 
 router.get('/courses', getCourses);
-router.get('/courses/:userId', getCoursesOfUser);
+router.get('/courses/:id', getCoursesOfUser);
 router.get('/courses/:program', getCoursesOfProgram);
 router.put('courses/:id', updateCourse);
 router.delete('/courses/:id', deleteCourse);
