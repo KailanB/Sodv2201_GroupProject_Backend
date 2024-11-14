@@ -1,30 +1,40 @@
+
+
 import sql from 'mssql';
-import { config } from '../config/dbConfig.js';
+import { connectToSQL } from './commonFunctions.js';
 
-
-const connectToSQL = async () => {
-
-    try {
-        await sql.connect(config);
-        sql.on('error', err => {
-            console.error('SQL Error: ' + err);
-        });
-    }
-    catch (err) {
-        console.error('Error connecting to SQL Server: ' + err);
-        throw new Error('Error connecting to SQL Server: ' + err);
-    }
-};
 
 export const getPrograms = async (req, res) => {
 
-    // select logic here
+    try {
+        await connectToSQL();
+        const result = await sql.query('SELECT * FROM Programs');
+        res.status(200).json(result.recordset);
+    }
+    catch (err) {
+
+        console.error('Error retrieving programs: ' + err);
+        res.status(500).json({error: 'Failed to retrieve program data'});
+    }
 
 };
 
 export const getProgramWithId = async (req, res) => {
 
     const { id } = req.params;
-    // use req.params to find and return user data of user Id
+
+    try {
+        await connectToSQL();
+        const result = await sql.query(
+            `SELECT *
+            FROM Programs
+            WHERE ProgramID = ${id}`);
+        res.status(201).json(result.recordset);
+    }
+    catch (err) {
+
+        console.error('Error retrieving program data: ' + err);
+        res.status(500).json({error: 'Failed to retrieve program data'});
+    }
 
 };
