@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import userRoutes from './routes/userRoutes.js';
+import studentRoutes from './routes/studentRoutes.js';
 import courseRoutes from './routes/courseRoutes.js';
 import programRoutes from './routes/programRoutes.js';
 
@@ -31,7 +31,7 @@ app.use(express.urlencoded({ extended: true}));
 // this is from the example setup
 // app.use('/api/v1', userRoutes);
 // I am not sure why it is written /api/v1. Gonna ask.
-app.use('/api', userRoutes);
+app.use('/api', studentRoutes);
 app.use('/api', courseRoutes);
 app.use('/api', programRoutes);
 
