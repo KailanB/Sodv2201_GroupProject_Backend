@@ -1,29 +1,12 @@
 
 import sql from 'mssql';
-import { config } from '../config/dbConfig.js';
-
-const connectToSQL = async () => {
-
-    try {
-        await sql.connect(config);
-        sql.on('error', err => {
-            console.error('SQL Error: ' + err);
-        });
-    }
-    catch (err) {
-        console.error('Error connecting to SQL Server: ' + err);
-        throw new Error('Error connecting to SQL Server: ' + err);
-    }
-};
+import { connectToSQL } from './commonFunctions.js';
 
 export const getCourses = async (req, res) => {
 
     try {
         await connectToSQL();
         const result = await sql.query('SELECT * FROM Courses');
-        // console.log(result);
-
-        // can we add a res.status here or not necessary?
         res.status(200).json(result.recordset);
     }
     catch (err) {
