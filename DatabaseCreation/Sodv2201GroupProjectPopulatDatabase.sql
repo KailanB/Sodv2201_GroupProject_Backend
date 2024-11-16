@@ -39,18 +39,21 @@ INSERT INTO Courses (CourseName, CourseCode, TermID, ProgramID, Description) VAL
 ('Sodv', 3203, 1,  3, 'Teachers learners the basics of using Unreal Engine.');
 
 INSERT INTO Students (FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, TermID, UserName, Password, StatusID) VALUES
-('Teeny', 'Tine', 'admin@gmail.com', '123-456-1234', '1900-10-10', 1, 1, 'TT', '123', 1),
 ('Scram', 'Biss', 'scramb@gmail.com', '133-556-1739', '2010-06-10', 1, 1, 'Scramb', '123', 1),
 ('Rosa', 'Diaz', 'rosadiaz@gmail.com', '543-555-8643', '1990-02-15', 3, 2, 'RD', '123', 1),
 ('Michael', 'Scott', 'mscott@gmail.com', '434-325-9809', '1970-07-24', 2, 3, 'Mscott', '123', 1);
 
+INSERT INTO Admins (FirstName, LastName, Email, PhoneNumber, Birthday, userName, Password, StatusID) VALUES
+('Teeny', 'Tine', 'admin@gmail.com', '123-456-1234', '1900-10-10', 'TT', '123', 2)
+
+
 INSERT INTO StudentCourses (StudentID, CourseID) VALUES
-(2, 1),
-(2, 2),
-(2, 3),
-(3, 4),
-(3, 5),
-(3, 6),
-(4, 7),
-(4, 8),
-(4, 9);
+(1, 1),
+(1, 2),
+(1, 3),
+(2, 4),
+(2, 5),
+(2, 6),
+(3, 7),
+(3, 8),
+(3, 9);
