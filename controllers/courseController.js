@@ -65,7 +65,24 @@ export const deleteCourse = async (req, res) => {
 
 export const getCoursesOfProgram = async (req, res) => {
 
-    const { program } = req.params;
-    // use req.params.program to find and return program specific courses
+    const { programId } = req.params;
+
+
+    try {
+        await connectToSQL();
+        const result = await sql.query(
+            `SELECT c.CourseID, c.CourseName, c.CourseCode, c.TermID, t.Term, c.ProgramID, c.Description, d.Department, p.Credential, FORMAT(p.StartDate, 'dd-MM-yyyy') AS 'Program Start', FORMAT(p.EndDate, 'dd-MM-yyyy') AS 'Program End' 
+            FROM Courses c JOIN Programs p ON p.ProgramID = c.ProgramID
+            JOIN Departments d ON d.DepartmentID = p.DepartmentID
+            JOIN Terms t ON t.TermID = c.TermID
+            WHERE c.ProgramID = ${programId}`);
+
+        res.status(201).json(result.recordset);
+    }
+    catch (err) {
+
+        console.error(`Error retrieving courses of program ID ${programId}: ` + err);
+        res.status(500).json({error: 'Failed to retrieve program course data'});
+    }
 
 };
