@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import studentRoutes from './routes/studentRoutes.js';
 import courseRoutes from './routes/courseRoutes.js';
 import programRoutes from './routes/programRoutes.js';
+import loginRoutes from './routes/loginRoutes.js';
 
 // also took these from the example app.js file
 //import path from 'path';
@@ -35,13 +36,8 @@ app.use('/api', studentRoutes);
 app.use('/api', courseRoutes);
 app.use('/api', programRoutes);
 
-// app.get('/courses', (req, res) => {
-//     res.send('test3');
-// });
+app.use('/api', loginRoutes);
 
-// app.get('/api/test', (req, res) => {
-//     res.send('test5');
-// });
 
 // app.get('/', (req, res) => {
 //  res.send('Hello, Class!');
