@@ -25,6 +25,8 @@ export const getStudentWithId = async (req, res) => {
         await connectToSQL();
         const result = await sql.query(`SELECT * FROM Students
                                         WHERE StudentID = ${studentId}`);
+
+        //console.log(result.recordset[0].StudentID);
         res.status(200).json(result.recordset);
     }
     catch (err) {
@@ -39,11 +41,13 @@ export const getStudentWithId = async (req, res) => {
 export const createStudent = async (req, res) => {
 
     const { FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, 
-        TermID, UserName, Password, StatusID } = req.body;
-
+        TermID, UserName, Password } = req.body;
+    // student status is 1 and we shouldn't need to pass this value from front end
+    // as we are not creating any admin accounts
+    const StatusID = 1;
     // console.log(FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, 
     //     TermID, UserName, Password, StatusID);
-    const validationError = studentInputValidation(FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, TermID, UserName, Password, StatusID);
+    const validationError = studentInputValidation(FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, TermID, UserName, Password);
 
     if(validationError)
     {
@@ -73,10 +77,11 @@ export const updateStudent = async (req, res) => {
     const { studentId } = req.params;
     
     const { FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, 
-        TermID, UserName, Password, StatusID } = req.body;
+        TermID, UserName, Password } = req.body;
 
-    const validationError = studentInputValidation(FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, TermID, UserName, Password, StatusID);
+    const validationError = studentInputValidation(FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, TermID, UserName, Password);
 
+    const StatusID = 1;
     
     if(validationError)
     {
@@ -112,52 +117,44 @@ export const patchStudent = async (req, res) => {
 
     const { studentId } = req.params;
     
+    // removed status ID as a student shouldn't be changing to admin
     const { FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, 
-        TermID, UserName, Password, StatusID } = req.body;
+        TermID, UserName, Password } = req.body;
 
-
+    //FORMAT(Birthday, 'dd-MM-yyyy') AS 'Program Start'
     try 
     {
-        await connectToSQL();
+        await connectToSQL(); 
 
-        const currentStudentData = await sql.query(`SELECT * FROM Students WHERE StudentID = ${studentId}`);
+        const currentStudentData = await sql.query(`SELECT FirstName, LastName, Email, PhoneNumber, FORMAT(Birthday, 'dd-MM-yyyy') AS Birthday, ProgramID, TermID, UserName, Password FROM Students WHERE StudentID = ${studentId}`);
         const currentStudent = currentStudentData.recordset[0];
 
         if(!currentStudent)
         {
             return res.status(404).json({error: 'Student record not found!'});
         }
-        // **************************************************************************
 
-
-        // HAVING MAJOR ISSUES WITH currentStudent.Birthday
-        // the date that comes back from the query cannot be reinserted into the database IDK WHY! 
-        // Will get back to this later!
-
-        // console.log('test');
-        // console.log(Date.parse(currentStudent.Birthday));
-        // console.log(String(currentStudent.Birthday));
         const updatedFirstName = FirstName !== undefined ? FirstName : currentStudent.FirstName;
         const updatedLastName = LastName !== undefined ? LastName : currentStudent.LastName;
         const updatedEmail = Email !== undefined ? Email : currentStudent.Email;
         const updatedPhoneNumber = PhoneNumber !== undefined ? PhoneNumber : currentStudent.PhoneNumber;
         
-        // const updatedBirthday = Birthday !== undefined ? Birthday : currentStudent.Birthday.slice(0, 10);
-        //const updatedBirthday = Birthday !== undefined ? Birthday : String(currentStudent.Birthday);
-        // ****************************************************************************************
+
+        const updatedBirthday = Birthday !== undefined ? Birthday : currentStudent.Birthday;
+        
         const updatedProgramID = ProgramID !== undefined ? ProgramID : currentStudent.ProgramID;
         const updatedTermID = TermID !== undefined ? TermID : currentStudent.TermID;
         const updatedUserName = UserName !== undefined ? UserName : currentStudent.UserName;
         const updatedPassword = Password !== undefined ? Password : currentStudent.Password;
-        const updatedStatusID = StatusID !== undefined ? StatusID : currentStudent.StatusID;
+        
+        // removed this as it shouldn't be changing
+        //const updatedStatusID = StatusID !== undefined ? StatusID : currentStudent.StatusID;        
 
+        const validationError = studentInputValidation(updatedFirstName, updatedLastName, updatedEmail, updatedPhoneNumber, updatedBirthday, updatedProgramID, updatedTermID, updatedUserName, updatedPassword);
         
 
-        const validationError = studentInputValidation(updatedFirstName, updatedLastName, updatedEmail, updatedPhoneNumber, updatedBirthday, updatedProgramID, updatedTermID, updatedUserName, updatedPassword, updatedStatusID);
-
-
-        console.log(updatedFirstName, updatedLastName, updatedEmail, updatedPhoneNumber, updatedBirthday, updatedProgramID, updatedTermID, updatedUserName, updatedPassword, updatedStatusID);
-    
+        console.log(updatedFirstName, updatedLastName, updatedEmail, updatedPhoneNumber, updatedBirthday, updatedProgramID, updatedTermID, updatedUserName, updatedPassword);
+        console.log('test');
         if(validationError)
         {
             return res.status(400).json({error: validationError});
@@ -166,7 +163,7 @@ export const patchStudent = async (req, res) => {
         console.log(studentId);
         const result = await sql.query(`UPDATE Students SET FirstName = '${updatedFirstName}', LastName = '${updatedLastName}', 
             Email = '${updatedEmail}', PhoneNumber = '${updatedPhoneNumber}', Birthday = '${updatedBirthday}', ProgramID = ${updatedProgramID}, 
-            TermID = ${updatedTermID}, UserName ='${updatedUserName}', Password = '${updatedPassword}', StatusID = ${updatedStatusID} 
+            TermID = ${updatedTermID}, UserName ='${updatedUserName}', Password = '${updatedPassword}'
             WHERE StudentID = ${studentId}`);
 
             // (`UPDATE Students SET FirstName = '${FirstName}', LastName = '${LastName}', 
@@ -220,7 +217,7 @@ export const deleteStudent = async (req, res) => {
 
 
 
-function studentInputValidation(FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, TermID, UserName, Password, StatusID)
+function studentInputValidation(FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, TermID, UserName, Password)
 {
     if (!FirstName)
     {
@@ -278,8 +275,8 @@ function studentInputValidation(FirstName, LastName, Email, PhoneNumber, Birthda
     {
         return 'password must be at least 8 characters long';
     }
-    if(!StatusID || isNaN(StatusID))
-    {
-        return 'Invalid or missing TermID';
-    }
+    // if(!StatusID || isNaN(StatusID))
+    // {
+    //     return 'Invalid or missing TermID';
+    // }
 }
