@@ -41,27 +41,97 @@ export const getCoursesOfUser = async (req, res) => {
 
 };
 
+// Create a new course
 export const createCourse = async (req, res) => {
+    const { CourseName, CourseCode, TermID, ProgramID, Description } = req.body;
 
-    const { /* course deets */ } = req.body;
+    if (!CourseName || !CourseCode || !TermID || !ProgramID) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
 
+    try {
+        await connectToSQL();
+        const query = `
+            INSERT INTO Courses (CourseName, CourseCode, TermID, ProgramID, Description)
+            VALUES (@CourseName, @CourseCode, @TermID, @ProgramID, @Description)
+        `;
+        const request = new sql.Request();
+        request.input('CourseName', sql.NVarChar, CourseName);
+        request.input('CourseCode', sql.NVarChar, CourseCode);
+        request.input('TermID', sql.Int, TermID);
+        request.input('ProgramID', sql.Int, ProgramID);
+        request.input('Description', sql.NVarChar, Description || null);
+
+        await request.query(query);
+        res.status(201).json({ message: 'Course created successfully' });
+    } catch (err) {
+        console.error('Error creating course: ' + err);
+        res.status(500).json({ error: 'Failed to create course' });
+    }
 };
 
+// Update an existing course
 export const updateCourse = async (req, res) => {
-
-    const { id  } = req.params;
-
+    const { id } = req.params;
+    const { CourseName, CourseCode, TermID, ProgramID, Description } = req.body;
     // use course id to find course in database and update
 
+    if (!CourseName || !CourseCode || !TermID || !ProgramID) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    try {
+        await connectToSQL();
+        const query = `
+            UPDATE Courses
+            SET CourseName = @CourseName,
+                CourseCode = @CourseCode,
+                TermID = @TermID,
+                ProgramID = @ProgramID,
+                Description = @Description
+            WHERE CourseID = @CourseID
+        `;
+        const request = new sql.Request();
+        request.input('CourseName', sql.NVarChar, CourseName);
+        request.input('CourseCode', sql.NVarChar, CourseCode);
+        request.input('TermID', sql.Int, TermID);
+        request.input('ProgramID', sql.Int, ProgramID);
+        request.input('Description', sql.NVarChar, Description || null);
+        request.input('CourseID', sql.Int, id);
+
+        const result = await request.query(query);
+        if (result.rowsAffected[0] === 0) {
+            return res.status(404).json({ error: 'Course not found' });
+        }
+
+        res.status(200).json({ message: 'Course updated successfully' });
+    } catch (err) {
+        console.error('Error updating course: ' + err);
+        res.status(500).json({ error: 'Failed to update course' });
+    }
 };
 
+// Delete a course
 export const deleteCourse = async (req, res) => {
-
     const { id } = req.params;
-    // use course id to find course in database and delete
 
+    try {
+        await connectToSQL();
+        const query = 'DELETE FROM Courses WHERE CourseID = @CourseID';
+        const request = new sql.Request();
+        request.input('CourseID', sql.Int, id);
+
+        const result = await request.query(query);
+        if (result.rowsAffected[0] === 0) {
+            return res.status(404).json({ error: 'Course not found' });
+        }
+
+        res.status(200).json({ message: 'Course deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting course: ' + err);
+        res.status(500).json({ error: 'Failed to delete course' });
+    }
 };
-
 
 export const getCoursesOfProgram = async (req, res) => {
 
