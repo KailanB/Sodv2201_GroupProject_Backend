@@ -23,6 +23,8 @@ dotenv.config();
 const app = express();
 const port = 5000;
 
+// Middleware
+app.use(express.json());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
@@ -42,7 +44,9 @@ app.use('/api', loginRoutes);
 // app.get('/', (req, res) => {
 //  res.send('Hello, Class!');
 // });
-
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
+});
 
 app.listen(port, () => {
  console.log(`Server is running at http://localhost:${port}`);
