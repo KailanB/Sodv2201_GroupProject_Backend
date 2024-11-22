@@ -1,3 +1,7 @@
+
+
+import bcrypt from 'bcrypt'; 
+
 import sql from 'mssql';
 import { connectToSQL } from './commonFunctions.js';
 
@@ -38,6 +42,19 @@ export const getStudentWithId = async (req, res) => {
 };
 
 
+export const getStudentWithEmail = async (Email) => {
+
+
+    
+    await connectToSQL();
+    const result = await sql.query(`SELECT * FROM Students 
+                                    WHERE Email = '${Email}'`);
+
+    return result.recordset[0];
+
+};
+
+
 export const createStudent = async (req, res) => {
 
     const { FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, 
@@ -55,9 +72,10 @@ export const createStudent = async (req, res) => {
     }
     else
     {
+        const HashedPassword = await bcrypt.hash(Password, 10); 
         try {
             await connectToSQL();
-            await sql.query(`INSERT INTO Students (FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, TermID, UserName, Password, StatusID) VALUES ('${FirstName}', '${LastName}', '${Email}', '${PhoneNumber}', '${Birthday}', ${ProgramID}, ${TermID}, '${UserName}', '${Password}', ${StatusID})`);
+            await sql.query(`INSERT INTO Students (FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, TermID, UserName, Password, StatusID) VALUES ('${FirstName}', '${LastName}', '${Email}', '${PhoneNumber}', '${Birthday}', ${ProgramID}, ${TermID}, '${UserName}', '${HashedPassword}', ${StatusID})`);
             res.status(201).json({message: 'Student created successfully'});
         }
         catch (err) {
