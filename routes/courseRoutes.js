@@ -1,6 +1,6 @@
 import express from 'express';
 import { getCourses, getCoursesOfProgram, getCoursesOfUser, createCourse, updateCourse, deleteCourse } from '../controllers/courseController.js';
-import { authenticateToken } from '../controllers/authMiddleware.js';
+import { authenticateToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
