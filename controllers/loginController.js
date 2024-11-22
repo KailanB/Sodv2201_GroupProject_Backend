@@ -31,7 +31,6 @@ export const login = async (req, res) => {
         const student = await getStudentWithEmail(Email);
         const admin = await getAdminWithEmail(Email);
 
-        console.log("admin " + admin);
         // If the student is found
         if (student && bcrypt.compareSync(Password, student.Password)) {
             // Generate a JWT token for the student
