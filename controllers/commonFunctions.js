@@ -1,17 +1,17 @@
 
-import sql from 'mssql';
-import { config } from '../config/dbConfig.js';
+// import sql from 'mssql';
+// import { config } from '../config/dbConfig.js';
 
-export const connectToSQL = async () => {
+// export const connectToSQL = async () => {
 
-    try {
-        await sql.connect(config);
-        sql.on('error', err => {
-            console.error('SQL Error: ' + err);
-        });
-    }
-    catch (err) {
-        console.error('Error connecting to SQL Server: ' + err);
-        throw new Error('Error connecting to SQL Server: ' + err);
-    }
-};
+//     try {
+//         await sql.connect(config);
+//         sql.on('error', err => {
+//             console.error('SQL Error: ' + err);
+//         });
+//     }
+//     catch (err) {
+//         console.error('Error connecting to SQL Server: ' + err);
+//         throw new Error('Error connecting to SQL Server: ' + err);
+//     }
+// };
