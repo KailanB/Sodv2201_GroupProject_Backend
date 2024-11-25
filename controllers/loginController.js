@@ -1,9 +1,10 @@
 import bcrypt from 'bcrypt';  
-import sql from 'mssql';
-import { connectToSQL } from './commonFunctions.js';
+
+//import sql from 'mssql';
+// import { connectToSQL } from './commonFunctions.js';
 import jwt from 'jsonwebtoken';
-import { getStudentWithEmail } from './studentController.js';
-import { getAdminWithEmail } from './adminController.js';
+import { modelGetStudentByEmail, modelGetStudentPasswordByEmail } from '../models/studentModel.js';
+import { modelGetAdminWithEmail, modelGetAdminPasswordByEmail } from '../models/adminModel.js';
 
 // key for JWT signing 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key'; 
@@ -12,7 +13,6 @@ export const login = async (req, res) => {
 
     
     const { Email, Password } = req.body;
-    
 
     // we will probably need to add !Email OR !Password here
     if(!Email)
@@ -21,20 +21,27 @@ export const login = async (req, res) => {
         return res.status(400).json({message: "Email is required"});
     }
     try {
-        await connectToSQL();
         
         // changed the method here to retrieve all data from student / admin. 
         // we could change this to only return necessary columns (email / pw)
         // I was not returning PW data with the stored SP I made
         // I just followed the in class example for this particular function.
         // we can adjust if there is time.
-        const student = await getStudentWithEmail(Email);
-        const admin = await getAdminWithEmail(Email);
+        const student = await modelGetStudentByEmail(Email);
+        const admin = await modelGetAdminWithEmail(Email);
+
+        const studentPassword = await modelGetStudentPasswordByEmail(Email);
+
+        const adminPassword = await modelGetAdminPasswordByEmail(Email);
 
         // If the student is found
-        if (student && bcrypt.compareSync(Password, student.Password)) {
+        if (student && bcrypt.compareSync(Password, studentPassword.Password)) {
+            
             // Generate a JWT token for the student
-            const token = jwt.sign({ email: student.Email, role: 'student' }, JWT_SECRET, { expiresIn: '1d' });
+            const token = jwt.sign(
+                { email: student.Email, role: 'student' },
+                 JWT_SECRET,
+                { expiresIn: '1d' });
 
             // got this line from the in class example 
             // Set the token in a cookie with httpOnly option for security
@@ -42,11 +49,10 @@ export const login = async (req, res) => {
             console.log(`Student ${student.Email} logged in successfully`);
             return res.status(200).json({ success: true, token });
         }
-
-
-
          // If the admin is found
-         else if (admin && bcrypt.compareSync(Password, admin.Password)) {
+         // since our admin was input manually the password is not encrypted
+         //bcrypt.compareSync(Password, adminPassword.Password)
+         else if (admin && adminPassword.Password == Password) {
             // Generate a JWT token for the admin
             const token = jwt.sign({ email: admin.Email, role: 'admin' }, JWT_SECRET, { expiresIn: '1d' });
             
@@ -63,8 +69,8 @@ export const login = async (req, res) => {
     }
     catch (err) {
 
-        console.error(`Error finding student with email ${Email}: ` + err);
-        res.status(500).json({error: `Error finding student with email ${Email}`});
+        console.error(`Error finding account with email ${Email}: ` + err);
+        res.status(500).json({error: `Error finding account with email ${Email}`});
     }
 
 

@@ -2,16 +2,27 @@
 
 import bcrypt from 'bcrypt'; 
 
-import sql from 'mssql';
-import { connectToSQL } from './commonFunctions.js';
+// import sql from 'mssql';
+// import { connectToSQL } from './commonFunctions.js';
+
+import {
+    modelGetAllStudents,
+    modelGetStudentByEmail,
+    modelGetStudentById,
+    modelCreateStudent,
+    modelUpdateStudent,
+    modelGetStudentPasswordByID,
+    modelDeleteStudent
+
+} from '../models/studentModel.js';
 
 
 export const getStudents = async (req, res) => {
 
     try {
-        await connectToSQL();
-        const result = await sql.query('SELECT * FROM Students');
-        res.status(200).json(result.recordset);
+
+        const students = await modelGetAllStudents();
+        return res.status(200).json(students);
     }
     catch (err) {
 
@@ -26,12 +37,8 @@ export const getStudentWithId = async (req, res) => {
     const { studentId } = req.params;
 
     try {
-        await connectToSQL();
-        const result = await sql.query(`SELECT * FROM Students
-                                        WHERE StudentID = ${studentId}`);
-
-        //console.log(result.recordset[0].StudentID);
-        res.status(200).json(result.recordset);
+        const student = await modelGetStudentById(studentId);
+        return res.status(200).json(student);
     }
     catch (err) {
 
@@ -46,11 +53,11 @@ export const getStudentWithEmail = async (Email) => {
 
 
     
-    await connectToSQL();
-    const result = await sql.query(`SELECT * FROM Students 
-                                    WHERE Email = '${Email}'`);
+    // await connectToSQL();
+    // const result = await sql.query(`SELECT * FROM Students 
+    //                                 WHERE Email = '${Email}'`);
 
-    return result.recordset[0];
+    // return result.recordset[0];
 
 };
 
@@ -62,27 +69,40 @@ export const createStudent = async (req, res) => {
     // student status is 1 and we shouldn't need to pass this value from front end
     // as we are not creating any admin accounts
     const StatusID = 1;
-    // console.log(FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, 
-    //     TermID, UserName, Password, StatusID);
     const validationError = studentInputValidation(FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, TermID, UserName, Password);
 
     if(validationError)
     {
         return res.status(400).json({error: validationError})
     }
-    else
+
+
+    try
     {
-        const HashedPassword = await bcrypt.hash(Password, 10); 
-        try {
-            await connectToSQL();
-            await sql.query(`INSERT INTO Students (FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, TermID, UserName, Password, StatusID) VALUES ('${FirstName}', '${LastName}', '${Email}', '${PhoneNumber}', '${Birthday}', ${ProgramID}, ${TermID}, '${UserName}', '${HashedPassword}', ${StatusID})`);
-            res.status(201).json({message: 'Student created successfully'});
-        }
-        catch (err) {
-            console.error('Error creating student:', err); 
-            res.status(500).json({error: 'Failed to create new student!'});
+        const checkEmailExists = await modelGetStudentByEmail(Email);
+
+        if(checkEmailExists)
+        {
+            return res.status(500).json({error: 'Failed to create new student, email already in use!'});
         }
     }
+    catch (err)
+    {
+        console.error('Error checking if email exists:', err); 
+        res.status(500).json({error: 'Failed to create new student!'});
+    }
+        
+    try {
+        const HashedPassword = await bcrypt.hash(Password, 10); 
+
+        await modelCreateStudent(FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, TermID, UserName, HashedPassword, StatusID);
+        res.status(201).json({message: 'Student created successfully'});
+    }
+    catch (err) {
+        console.error('Error creating student:', err); 
+        res.status(500).json({error: 'Failed to create new student!'});
+    }
+
 
     
 
@@ -105,21 +125,45 @@ export const updateStudent = async (req, res) => {
     {
         return res.status(400).json({error: validationError})
     }
+
+
+    try
+    {  
+        const checkEmailExists = await modelGetStudentByEmail(Email);
+        // check if new email exists
+        if(checkEmailExists)
+        {
+            // if new email exists in DB and does NOT belong to ID current user
+            if(checkEmailExists.StudentID != studentId)
+            {
+                // return error
+                return res.status(500).json({error: 'Failed to update student, email already in use!'});
+            }
+            
+        }
+    }
+    catch (err)
+    {
+        console.error('Error checking if email exists:', err); 
+        res.status(500).json({error: 'Failed to update student! Email in use!'});
+    }
+
+
     try 
     {
-        await connectToSQL();
-        const result = await sql.query(`UPDATE Students SET FirstName = '${FirstName}', LastName = '${LastName}', 
-            Email = '${Email}', PhoneNumber = '${PhoneNumber}', Birthday = '${Birthday}', ProgramID = ${ProgramID}, 
-            TermID = ${TermID}, UserName ='${UserName}', Password = '${Password}', StatusID = ${StatusID} 
-            WHERE StudentID = ${studentId}`);
-        if(result.rowsAffected[0] === 0)
+        const HashedPassword = await bcrypt.hash(Password, 10); 
+
+        // check that result to check if rows were affected
+        const result = await modelUpdateStudent(FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, TermID, UserName, HashedPassword, StatusID, studentId);
+        if(result.rowsAffected > 0)
         {
-            return res.status(404).json({error: `Student with ID: ${studentId} Not found`})
+            res.status(201).json({message:  `Student with ID: ${studentId} updated successfully`});
         }
         else
         {
-            res.json({message:  `Student with ID: ${studentId} updated successfully`});
+            res.status(500).json({message:  `Failed to update student data, studentID ${studentId} not found`});
         }
+        
     }
     catch (err)
     {
@@ -135,22 +179,24 @@ export const patchStudent = async (req, res) => {
 
     const { studentId } = req.params;
     
-    // removed status ID as a student shouldn't be changing to admin
     const { FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, 
         TermID, UserName, Password } = req.body;
 
-    //FORMAT(Birthday, 'dd-MM-yyyy') AS 'Program Start'
     try 
     {
-        await connectToSQL(); 
-
-        const currentStudentData = await sql.query(`SELECT FirstName, LastName, Email, PhoneNumber, FORMAT(Birthday, 'dd-MM-yyyy') AS Birthday, ProgramID, TermID, UserName, Password FROM Students WHERE StudentID = ${studentId}`);
-        const currentStudent = currentStudentData.recordset[0];
+        const currentStudent = await modelGetStudentById(studentId)
+        // student status is 1
+        const statusID = 1;
+        
+        // this uses a separate function especially made for pulling password data
+        // in all other requests password data is not included
+        const studentPassword = await modelGetStudentPasswordByID(studentId);
 
         if(!currentStudent)
         {
             return res.status(404).json({error: 'Student record not found!'});
         }
+        
 
         const updatedFirstName = FirstName !== undefined ? FirstName : currentStudent.FirstName;
         const updatedLastName = LastName !== undefined ? LastName : currentStudent.LastName;
@@ -163,45 +209,60 @@ export const patchStudent = async (req, res) => {
         const updatedProgramID = ProgramID !== undefined ? ProgramID : currentStudent.ProgramID;
         const updatedTermID = TermID !== undefined ? TermID : currentStudent.TermID;
         const updatedUserName = UserName !== undefined ? UserName : currentStudent.UserName;
-        const updatedPassword = Password !== undefined ? Password : currentStudent.Password;
-        
-        // removed this as it shouldn't be changing
-        //const updatedStatusID = StatusID !== undefined ? StatusID : currentStudent.StatusID;        
-
+        const updatedPassword = Password !== undefined ? await bcrypt.hash(Password, 10) : studentPassword.Password;       
         const validationError = studentInputValidation(updatedFirstName, updatedLastName, updatedEmail, updatedPhoneNumber, updatedBirthday, updatedProgramID, updatedTermID, updatedUserName, updatedPassword);
-        
 
-        console.log(updatedFirstName, updatedLastName, updatedEmail, updatedPhoneNumber, updatedBirthday, updatedProgramID, updatedTermID, updatedUserName, updatedPassword);
-        console.log('test');
         if(validationError)
         {
             return res.status(400).json({error: validationError});
         }
         
-        console.log(studentId);
-        const result = await sql.query(`UPDATE Students SET FirstName = '${updatedFirstName}', LastName = '${updatedLastName}', 
-            Email = '${updatedEmail}', PhoneNumber = '${updatedPhoneNumber}', Birthday = '${updatedBirthday}', ProgramID = ${updatedProgramID}, 
-            TermID = ${updatedTermID}, UserName ='${updatedUserName}', Password = '${updatedPassword}'
-            WHERE StudentID = ${studentId}`);
 
-            // (`UPDATE Students SET FirstName = '${FirstName}', LastName = '${LastName}', 
-            //     Email = '${Email}', PhoneNumber = '${PhoneNumber}', Birthday = '${Birthday}', ProgramID = ${ProgramID}, 
-            //     TermID = ${TermID}, UserName ='${UserName}', Password = '${Password}', StatusID = ${StatusID} 
-            //     WHERE StudentID = ${studentId}`)
-            
-        if(result.rowsAffected[0] === 0)
+        try
         {
+            // check if new email exists
+            const checkEmailExists = await modelGetStudentByEmail(updatedEmail);
             
-            return res.status(404).json({error: `Student with ID: ${studentId} Not found`})
+            // if new email exists in DB and does NOT belong to current user
+            if(checkEmailExists)
+            {
+                if(checkEmailExists.Email != currentStudent.Email)
+                {
+                    // return error 
+                    return res.status(500).json({error: 'Failed to patch student, email already in use!'});
+                }
+                
+            }
         }
-        else
+        catch (err)
         {
-            res.json({message:  `Student with ID: ${studentId} patched successfully`});
+            console.error('Error checking if email exists:', err); 
+            res.status(500).json({error: 'Failed to patch student, email in use!'});
+        }
+
+        try 
+        {
+        
+            const result = await modelUpdateStudent(updatedFirstName, updatedLastName, updatedEmail, updatedPhoneNumber, updatedBirthday, updatedProgramID, updatedTermID, updatedUserName, updatedPassword, statusID, studentId);
+
+            if(result.rowsAffected > 0)
+            {
+                res.json({message:  `Student with ID: ${studentId} updated successfully`});
+            }
+            else
+            {
+                res.status(500).json({message:  `Failed to update student data, studentID ${studentId} not found`});
+            }
+        }
+        catch (err)
+        {
+            console.error('Error updating student in DB')
+            res.status(500).json({message:  `Failed to update student data, studentID ${studentId}`});
         }
     }
     catch (err)
     {
-        //console.error('Error patching student:', err); 
+        console.error('Error patching student:', err); 
         res.status(500).json({message:  `Failed to patch student data`});
     }
     
@@ -214,15 +275,14 @@ export const deleteStudent = async (req, res) => {
     
     try 
     {
-        await connectToSQL();
-        const result = await sql.query(`DELETE FROM Students WHERE StudentID = ${studentId}`);
-        if(result.rowsAffected[0] === 0)
+        const result = await modelDeleteStudent(studentId);
+        if(result.rowsAffected > 0)
         {
-            return res.status(404).json({error: `Student data with ID: ${studentId} Not found`})
+            res.json({message:  `Student with ID: ${studentId} deleted successfully`});
         }
         else
         {
-            res.json({message:  `Student with ID: ${studentId} deleted successfully`});
+            res.status(500).json({message:  `Failed to delete student data, studentID ${studentId} not found`});
         }
     }
     catch (err)

@@ -1,15 +1,20 @@
 
 
-import sql from 'mssql';
-import { connectToSQL } from './commonFunctions.js';
+// import sql from 'mssql';
+// import { connectToSQL } from './commonFunctions.js';
+
+import {
+    modelGetAllPrograms,
+    modelGetAllProgramsWithId
+} from '../models/programModel.js';
 
 
 export const getPrograms = async (req, res) => {
 
     try {
-        await connectToSQL();
-        const result = await sql.query('SELECT * FROM Programs');
-        res.status(200).json(result.recordset);
+        
+        const programs = await modelGetAllPrograms();
+        res.status(200).json(programs);
     }
     catch (err) {
 
@@ -24,12 +29,8 @@ export const getProgramWithId = async (req, res) => {
     const { id } = req.params;
 
     try {
-        await connectToSQL();
-        const result = await sql.query(
-            `SELECT *
-            FROM Programs
-            WHERE ProgramID = ${id}`);
-        res.status(201).json(result.recordset);
+        const program = await modelGetAllProgramsWithId(id);
+        return res.status(200).json(program);
     }
     catch (err) {
 
