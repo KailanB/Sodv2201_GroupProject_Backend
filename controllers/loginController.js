@@ -14,24 +14,16 @@ export const login = async (req, res) => {
     
     const { Email, Password } = req.body;
 
-    // we will probably need to add !Email OR !Password here
-    if(!Email)
-    {
-        
-        return res.status(400).json({message: "Email is required"});
+    if (!Email || !Password) {
+        return res.status(400).json({ message: "Email and Password are required" });
     }
     try {
         
-        // changed the method here to retrieve all data from student / admin. 
-        // we could change this to only return necessary columns (email / pw)
-        // I was not returning PW data with the stored SP I made
-        // I just followed the in class example for this particular function.
-        // we can adjust if there is time.
+        
         const student = await modelGetStudentByEmail(Email);
         const admin = await modelGetAdminWithEmail(Email);
 
         const studentPassword = await modelGetStudentPasswordByEmail(Email);
-
         const adminPassword = await modelGetAdminPasswordByEmail(Email);
 
         // If the student is found
@@ -43,14 +35,13 @@ export const login = async (req, res) => {
                  JWT_SECRET,
                 { expiresIn: '1d' });
 
-            // got this line from the in class example 
             // Set the token in a cookie with httpOnly option for security
             res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
             console.log(`Student ${student.Email} logged in successfully`);
             return res.status(200).json({ success: true, token });
         }
          // If the admin is found
-         // since our admin was input manually the password is not encrypted
+        
          //bcrypt.compareSync(Password, adminPassword.Password)
          else if (admin && adminPassword.Password == Password) {
             // Generate a JWT token for the admin
@@ -78,12 +69,68 @@ export const login = async (req, res) => {
 
 // Logout handler - client will just delete the token
 export const logout = async (req, res) => {
-    // In the token-based system, I dont't think, there's a need to clear cookies.
-    // we do have a token cookie that we need to clear
     console.log("User logged out");
     res.clearCookie('token');
     return res.status(200).json({ success: true, message: "Logout successful" });
 };
+
+
+
+//I've tried this login code to use JWT tokens for authentication instead of cookies with raw data, burt commented out this part if you wanna 
+//give a try, it's just the minot change but can improves security ensures the app works better.
+
+//     try {
+//         const student = await modelGetStudentByEmail(Email);
+//         const admin = await modelGetAdminWithEmail(Email);
+
+//         if (student) {
+//             const studentPassword = await modelGetStudentPasswordByEmail(Email);
+
+//             // Validate student's password
+//             if (bcrypt.compareSync(Password, studentPassword.Password)) {
+//                 // Generate a JWT token for the student
+//                 const token = jwt.sign(
+//                     { email: student.Email, role: 'student' },
+//                     JWT_SECRET,
+//                     { expiresIn: '1d' }
+//                 );
+
+//                 // Set the token in a secure cookie
+//                 res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+//                 console.log(`Student ${student.Email} logged in successfully`);
+//                 return res.status(200).json({ success: true, token });
+//             }
+//         }
+
+//         if (admin) {
+//             const adminPassword = await modelGetAdminPasswordByEmail(Email);
+
+//             // Validate admin's password
+//             if (bcrypt.compareSync(Password, adminPassword.Password)) {
+//                 // Generate a JWT token for the admin
+//                 const token = jwt.sign(
+//                     { email: admin.Email, role: 'admin' },
+//                     JWT_SECRET,
+//                     { expiresIn: '1d' }
+//                 );
+
+//                 // Set the token in a secure cookie
+//                 res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+//                 console.log(`Admin ${admin.Email} logged in successfully`);
+//                 return res.status(200).json({ success: true, token });
+//             }
+//         }
+
+//         // If no match found, return invalid credentials
+//         return res.status(401).json({ error: "Invalid email or password" });
+//     } catch (err) {
+//         console.error(`Error finding account with email ${Email}: ` + err);
+//         res.status(500).json({ error: `Error finding account with email ${Email}` });
+//     }
+// };
+
+
+
 
 
 // We should be able to delete all of this but keeping it for reference for now
