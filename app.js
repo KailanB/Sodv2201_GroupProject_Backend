@@ -44,9 +44,9 @@ app.use('/api', loginRoutes);
 // app.get('/', (req, res) => {
 //  res.send('Hello, Class!');
 // });
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
-});
+// app.listen(5000, () => {
+//     console.log('Server is running on port 3000');
+// });
 
 app.listen(port, () => {
  console.log(`Server is running at http://localhost:${port}`);
