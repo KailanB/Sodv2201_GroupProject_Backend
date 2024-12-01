@@ -110,7 +110,7 @@ export const modelGetStudentPasswordByEmail = async (email) => {
 };
 
 
-export const modelDeleteStudent = async () => {
+export const modelDeleteStudent = async (id) => {
 
     const pool = await poolPromise;
     const result = await pool.request()

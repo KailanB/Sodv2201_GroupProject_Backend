@@ -8,8 +8,8 @@ router.get('/students', authenticateTokenAdmin, getStudents);
 // any account needs to retrieve their info via id
 router.get('/students/:studentId', authenticateToken, getStudentWithId);
 router.post('/students', createStudent);
-router.put('/students/:studentId', updateStudent);
-router.patch('/students/:studentId', patchStudent);
+router.put('/students/:studentId', authenticateToken, updateStudent);
+router.patch('/students/:studentId', authenticateToken, patchStudent);
 router.delete('/students/:studentId', deleteStudent);
 
 
