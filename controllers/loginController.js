@@ -34,9 +34,11 @@ export const login = async (req, res) => {
                 { email: student.Email, role: 'student' },
                  JWT_SECRET,
                 { expiresIn: '1d' });
-
+            //console.log("token " + token);
+            //console.log(JWT_SECRET);
             // Set the token in a cookie with httpOnly option for security
             res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+            console.log("res cookie token: " + res.cookie.token);
             console.log(`Student ${student.Email} logged in successfully`);
             return res.status(200).json({ success: true, token });
         }
@@ -69,6 +71,7 @@ export const login = async (req, res) => {
 
 // Logout handler - client will just delete the token
 export const logout = async (req, res) => {
+    console.log(req.cookies);
     console.log("User logged out");
     res.clearCookie('token');
     return res.status(200).json({ success: true, message: "Logout successful" });

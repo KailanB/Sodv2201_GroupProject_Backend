@@ -1,4 +1,5 @@
 import express from 'express';
+import cookieParser from 'cookie-parser'; 
 import dotenv from 'dotenv';
 import studentRoutes from './routes/studentRoutes.js';
 import courseRoutes from './routes/courseRoutes.js';
@@ -25,8 +26,7 @@ const port = 5000;
 
 // Middleware
 app.use(express.json());
-
-app.use(express.json());
+app.use(cookieParser());   
 app.use(express.urlencoded({ extended: true}));
 
 // app.use(express.static('public')); // is this needed??
