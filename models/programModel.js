@@ -7,7 +7,7 @@ export const modelGetAllPrograms = async () => {
     const pool = await poolPromise;
 
     const result = await pool.request()
-    .query('SELECT * FROM Programs');
+    .query('SELECT p.ProgramID, p.Credential, p.DepartmentID, d.Department, p.StartDate, p.EndDate, p.Length, p.Description, p.Fee, p.Code FROM Programs p JOIN Departments d ON d.DepartmentID = p.DepartmentID');
 
     return result.recordset;
 

@@ -7,8 +7,10 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
 // Middleware to authenticate the token and protect routes
 export const authenticateToken = (req, res, next) => {
 
+    console.log(req.cookies);
     // const token = req.header('Authorization')?.split(' ')[1];  // Get the token from Authorization header
     const token = req.cookies.token;
+    console.log(token);
 
     if (!token) {
         return res.status(401).json({ error: 'Access denied, no token provided' });
