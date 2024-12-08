@@ -21,8 +21,24 @@ dotenv.config();
 // const __dirname = dirname(__filename);
 
 
+
+
 const app = express();
 const port = 5000;
+
+
+// https://stackoverflow.com/questions/18310394/no-access-control-allow-origin-node-apache-port-issue
+// resolving issues of access control
+// had to add this in the back end code to allow access from the requesting server from port 3000
+app.use(function (req, res, next) {
+
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    next();
+});
+
 
 // Middleware
 app.use(express.json());
