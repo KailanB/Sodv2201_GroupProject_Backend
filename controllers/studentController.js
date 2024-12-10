@@ -1,9 +1,11 @@
 
 
 import bcrypt from 'bcrypt'; 
-
+import cookieParser from 'cookie-parser'; 
 // import sql from 'mssql';
 // import { connectToSQL } from './commonFunctions.js';
+
+import { GetCookieValues } from '../utils/utilities.js';
 
 import {
     modelGetAllStudents,
@@ -31,6 +33,23 @@ export const getStudents = async (req, res) => {
     }
 
 };
+
+// ***** TEST *******************************
+export const getStudentByIdCookie = async (req, res) => {
+
+    const user = GetCookieValues(req.cookies.token);
+    try {
+        const student = await modelGetStudentById(user.id);
+        return res.status(200).json(student);
+    }
+    catch (err) {
+
+        console.error('Error retrieving student: ' + err);
+        res.status(500).json({error: 'Failed to retrieve student data'});
+    }
+
+};
+ // ***************************************
 
 export const getStudentWithId = async (req, res) => {
 
