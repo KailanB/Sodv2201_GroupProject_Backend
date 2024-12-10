@@ -32,7 +32,12 @@ export const modelGetStudentById = async (id) => {
     const pool = await poolPromise;
     const result = await pool.request()
     .input('id', sql.Int, id)
-    .query(`SELECT StudentID, FirstName, LastName, Email, PhoneNumber, FORMAT(Birthday, 'dd-MM-yyyy') AS Birthday, ProgramID, TermID, UserName, StatusID FROM Students WHERE StudentID = @id`);
+    .query(`SELECT StudentID, FirstName, LastName, Email, PhoneNumber, FORMAT(Birthday, 'dd-MM-yyyy') AS Birthday, s.ProgramID, d.Department, p.Credential, s.TermID, t.Term, UserName, s.StatusID, Status FROM Students s 
+        JOIN Terms t ON s.TermID = t.TermID
+        JOIN Programs p ON p.ProgramID = s.ProgramID
+        JOIN Departments d ON p.DepartmentID = d.DepartmentID 
+        JOIN Status st ON st.StatusID = s.StatusID
+        WHERE StudentID = @id`);
 
     return result.recordset[0];
 
