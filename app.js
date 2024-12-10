@@ -5,6 +5,7 @@ import studentRoutes from './routes/studentRoutes.js';
 import courseRoutes from './routes/courseRoutes.js';
 import programRoutes from './routes/programRoutes.js';
 import loginRoutes from './routes/loginRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 // also took these from the example app.js file
 //import path from 'path';
@@ -55,6 +56,7 @@ app.use('/api', courseRoutes);
 app.use('/api', programRoutes);
 
 app.use('/api', loginRoutes);
+app.use('/api', adminRoutes);
 
 
 // app.get('/', (req, res) => {
