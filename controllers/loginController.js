@@ -18,6 +18,7 @@ export const login = async (req, res) => {
     //console.log("Email: " + Email + " Password: " + Password);
 
     if (!Email || !Password) {
+        
         return res.status(400).json({ message: "Email and Password are required" });
     }
     try {
@@ -30,7 +31,8 @@ export const login = async (req, res) => {
         const adminPassword = await modelGetAdminPasswordByEmail(Email);
 
         // If the student is found
-        if (student && bcrypt.compareSync(Password, studentPassword.Password)) {
+        if (student && bcrypt.compareSync(Password, studentPassword.Password)) 
+        {
             
             // console.log(JWT_SECRET);
             // added student ID to token for easier data fetching
@@ -54,7 +56,8 @@ export const login = async (req, res) => {
          // If the admin is found
         
          //bcrypt.compareSync(Password, adminPassword.Password)
-         else if (admin && adminPassword.Password == Password) {
+        else if (admin && adminPassword.Password == Password) 
+        {
             // Generate a JWT token for the admin
             const token = jwt.sign({ email: admin.Email, id: admin.AdminID,  role: 'admin' }, JWT_SECRET, { expiresIn: '1d' });
             
@@ -64,8 +67,10 @@ export const login = async (req, res) => {
             res.cookie('role', 'admin', {maxAge: 24 * 60 * 60 * 1000 });
             console.log(`Admin ${admin.Email} logged in successfully`);
             return res.status(200).json({ success: true, role: 'admin'});
-        } else {
-            return res.status(400).json({ error: "Error retrieving email" });
+        } 
+        else 
+        {
+            return res.status(400).json({ message: "Password is invalid!" });
         }
 
 
@@ -73,7 +78,7 @@ export const login = async (req, res) => {
     catch (err) {
 
         console.error(`Error finding account with email ${Email}: ` + err);
-        res.status(500).json({error: `Error finding account with email ${Email}`});
+        res.status(500).json({message: `Error finding account with email ${Email}`});
     }
 
 
@@ -81,9 +86,10 @@ export const login = async (req, res) => {
 
 // Logout handler - client will just delete the token
 export const logout = async (req, res) => {
-    console.log(req.cookies);
+
     console.log("User logged out");
     res.clearCookie('token');
+    res.clearCookie('role');
     return res.status(200).json({ success: true, message: "Logout successful" });
 };
 
