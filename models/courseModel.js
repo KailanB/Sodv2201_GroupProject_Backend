@@ -26,9 +26,22 @@ export const modelGetCoursesOfUser = async (id) => {
     .input('id', sql.Int, id)
     .query(`SELECT c.CourseID, c.CourseName, c.CourseCode, c.TermID, c.ProgramID, c.Description 
         FROM Courses c JOIN StudentCourses sc ON sc.CourseId = c.CourseID 
-        JOIN Students s ON s.StudentID = sc.StudentID WHERE s.StudentID = @id`)
+        JOIN Students s ON s.StudentID = sc.StudentID WHERE s.StudentID = @id`);
 
     return result.recordset;
+
+};
+
+
+export const modelDeleteCoursesOfUser = async (studentId, courseId) => {
+
+    const pool = await poolPromise;
+    const result = await pool.request()
+    .input('studentId', sql.Int, studentId)
+    .input('courseId', sql.Int, courseId)
+    .query(`DELETE FROM StudentCourses WHERE StudentID = @studentId AND CourseID = @courseId`);
+
+        return result;
 
 };
 
