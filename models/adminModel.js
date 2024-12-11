@@ -42,3 +42,24 @@ export const modelGetAdminById = async (id) => {
 
 };
 
+export const modelCreateMessage = async (FullName, Email, Message) => {
+
+    const pool = await poolPromise;
+    const result = await pool.request()
+    .input('fullName', sql.VarChar, FullName)
+    .input('email', sql.VarChar, Email)
+    .input('message', sql.VarChar, Message)
+    .query(`INSERT INTO Messages Values (@fullName, @email, @message);`);
+
+    return result;
+};
+
+export const modelGetAllMessages = async () => {
+
+    
+    const pool = await poolPromise;
+    const result = await pool.request()
+    .query(`SELECT * FROM Messages`);
+    return result.recordset;
+};
+
