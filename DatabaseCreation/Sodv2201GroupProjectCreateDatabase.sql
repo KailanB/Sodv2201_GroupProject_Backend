@@ -117,3 +117,11 @@ CREATE TABLE StudentCourses (
 	
 	
 );
+
+
+CREATE TABLE Messages (
+    MessageID INT PRIMARY KEY IDENTITY(1,1),
+	FullName VARCHAR(100), NOT NULL,
+	Email VARCHAR (50) NOT NULL,
+    Message VARCHAR(MAX) NOT NULL
+);

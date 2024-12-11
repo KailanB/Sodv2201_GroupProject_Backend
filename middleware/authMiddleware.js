@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 // Secret key to verify JWT 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
 
+
 // Middleware to authenticate the token and protect routes
 export const authenticateToken = (req, res, next) => {
 
@@ -23,6 +24,7 @@ export const authenticateToken = (req, res, next) => {
 };
 
 export const authenticateTokenAdmin = (req, res, next) => {
+
 
     const token = req.cookies.token;
     if (!token) {
@@ -45,3 +47,4 @@ export const authenticateTokenAdmin = (req, res, next) => {
          
     });
 };
+

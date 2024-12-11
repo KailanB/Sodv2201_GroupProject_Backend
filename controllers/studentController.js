@@ -1,9 +1,11 @@
 
 
 import bcrypt from 'bcrypt'; 
-
+import cookieParser from 'cookie-parser'; 
 // import sql from 'mssql';
 // import { connectToSQL } from './commonFunctions.js';
+
+import { GetCookieValues } from '../utils/utilities.js';
 
 import {
     modelGetAllStudents,
@@ -31,6 +33,23 @@ export const getStudents = async (req, res) => {
     }
 
 };
+
+// ***** TEST *******************************
+export const getStudentByIdCookie = async (req, res) => {
+
+    const user = GetCookieValues(req.cookies.token);
+    try {
+        const student = await modelGetStudentById(user.id);
+        return res.status(200).json(student);
+    }
+    catch (err) {
+
+        console.error('Error retrieving student: ' + err);
+        res.status(500).json({error: 'Failed to retrieve student data'});
+    }
+
+};
+ // ***************************************
 
 export const getStudentWithId = async (req, res) => {
 
@@ -64,15 +83,17 @@ export const getStudentWithEmail = async (Email) => {
 
 export const createStudent = async (req, res) => {
 
-    const { FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, 
-        TermID, UserName, Password } = req.body;
+   
+    const { FirstName, LastName, Email, Phone, Birthday, Program, 
+        Term, UserName, Password } = req.body;
     // student status is 1 and we shouldn't need to pass this value from front end
     // as we are not creating any admin accounts
     const StatusID = 1;
-    const validationError = studentInputValidation(FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, TermID, UserName, Password);
+    const validationError = studentInputValidation(FirstName, LastName, Email, Phone, Birthday, Program, Term, UserName, Password);
 
     if(validationError)
     {
+        console.log(validationError);
         return res.status(400).json({error: validationError})
     }
 
@@ -95,7 +116,7 @@ export const createStudent = async (req, res) => {
     try {
         const HashedPassword = await bcrypt.hash(Password, 10); 
 
-        await modelCreateStudent(FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, TermID, UserName, HashedPassword, StatusID);
+        await modelCreateStudent(FirstName, LastName, Email, Phone, Birthday, Program, Term, UserName, HashedPassword, StatusID);
         res.status(201).json({message: 'Student created successfully'});
     }
     catch (err) {

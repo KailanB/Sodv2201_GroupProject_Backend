@@ -11,10 +11,14 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
 
 export const login = async (req, res) => {
 
+   
     
     const { Email, Password } = req.body;
 
+    //console.log("Email: " + Email + " Password: " + Password);
+
     if (!Email || !Password) {
+        
         return res.status(400).json({ message: "Email and Password are required" });
     }
     try {
@@ -27,35 +31,46 @@ export const login = async (req, res) => {
         const adminPassword = await modelGetAdminPasswordByEmail(Email);
 
         // If the student is found
-        if (student && bcrypt.compareSync(Password, studentPassword.Password)) {
+        if (student && bcrypt.compareSync(Password, studentPassword.Password)) 
+        {
             
+            // console.log(JWT_SECRET);
+            // added student ID to token for easier data fetching
             // Generate a JWT token for the student
             const token = jwt.sign(
-                { email: student.Email, role: 'student' },
+                { email: student.Email, id: student.StudentID, role: 'student' },
                  JWT_SECRET,
                 { expiresIn: '1d' });
             //console.log("token " + token);
             //console.log(JWT_SECRET);
             // Set the token in a cookie with httpOnly option for security
             res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
-            console.log("res cookie token: " + res.cookie.token);
+            // added secondary cookie to use for navigation bar
+            // this is just so I do not have to make a server request every time I need to render the nav bar 
+            // as I think that would be really slow..
+            res.cookie('role', 'student', {maxAge: 24 * 60 * 60 * 1000 });
+            // console.log("res cookie token: " + res.cookie.token);
             console.log(`Student ${student.Email} logged in successfully`);
-            return res.status(200).json({ success: true, token });
+            return res.status(200).json({ success: true, role: 'student' });
         }
          // If the admin is found
         
          //bcrypt.compareSync(Password, adminPassword.Password)
-         else if (admin && adminPassword.Password == Password) {
+        else if (admin && adminPassword.Password == Password) 
+        {
             // Generate a JWT token for the admin
-            const token = jwt.sign({ email: admin.Email, role: 'admin' }, JWT_SECRET, { expiresIn: '1d' });
+            const token = jwt.sign({ email: admin.Email, id: admin.AdminID,  role: 'admin' }, JWT_SECRET, { expiresIn: '1d' });
             
             // got this line from the in class example 
             // Set the token in a cookie with httpOnly option for security
-            res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+            res.cookie('token', token,  { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+            res.cookie('role', 'admin', {maxAge: 24 * 60 * 60 * 1000 });
             console.log(`Admin ${admin.Email} logged in successfully`);
-            return res.status(200).json({ success: true, token });
-        } else {
-            return res.status(400).json({ error: "Error retrieving email" });
+            return res.status(200).json({ success: true, role: 'admin'});
+        } 
+        else 
+        {
+            return res.status(400).json({ message: "Password is invalid!" });
         }
 
 
@@ -63,7 +78,7 @@ export const login = async (req, res) => {
     catch (err) {
 
         console.error(`Error finding account with email ${Email}: ` + err);
-        res.status(500).json({error: `Error finding account with email ${Email}`});
+        res.status(500).json({message: `Error finding account with email ${Email}`});
     }
 
 
@@ -71,9 +86,10 @@ export const login = async (req, res) => {
 
 // Logout handler - client will just delete the token
 export const logout = async (req, res) => {
-    console.log(req.cookies);
+
     console.log("User logged out");
     res.clearCookie('token');
+    res.clearCookie('role');
     return res.status(200).json({ success: true, message: "Logout successful" });
 };
 
