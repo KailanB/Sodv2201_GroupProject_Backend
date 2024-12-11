@@ -16,11 +16,13 @@ export const modelGetAllPrograms = async () => {
 
 export const modelGetAllProgramsWithId = async (id) => {
 
+    
     const pool = await poolPromise;
-
     const result = await pool.request()
     .input('programId', sql.Int, id)
-    .query('SELECT * FROM Programs WHERE ProgramID = @programId');
+    .query(`SELECT ProgramID, Credential, FORMAT(StartDate, 'dd-MM-yyyy') AS 'StartDate', FORMAT(EndDate, 'dd-MM-yyyy') AS 'EndDate', Length, Description, Fee, Code, d.Department
+            FROM Programs p JOIN Departments d ON p.DepartmentID = d.DepartmentID
+            WHERE ProgramID = @programId`);
 
     return result.recordset[0];
    
