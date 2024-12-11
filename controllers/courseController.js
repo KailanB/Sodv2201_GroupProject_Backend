@@ -6,7 +6,8 @@ import {
 
     modelGetAllCourses,
     modelGetCoursesOfUser,
-    modelDeleteCoursesOfUser,
+    modelDeleteCourseOfUser,
+    modelAddCourseOfUser,
     modelCreateCourse,
     modelUpdateCourse,
     modelDeleteCourse,
@@ -48,13 +49,34 @@ export const getCoursesOfUser = async (req, res) => {
 
 };
 
-export const deleteCoursesOfUser = async (req, res) => {
+
+export const addCourseOfUser = async (req, res) => {
+    const { studentId, courseId  } = req.params;
+    try 
+    {
+        
+        const result = await modelAddCourseOfUser(studentId, courseId);
+        if (result.rowsAffected === 0) 
+        {
+            return res.status(404).json({ error: 'Course not added' });
+        }
+        return res.status(200).json({ message: 'Course added successfully' });
+    } 
+    catch (err) 
+    {
+        console.error('Error adding course: ' + err);
+        return res.status(500).json({ error: 'Failed to add course' });
+    }
+
+
+};
+
+export const deleteCourseOfUser = async (req, res) => {
     
     const { studentId, courseId  } = req.params;
     
     try {
-        console.log(studentId);
-        const result = await modelDeleteCoursesOfUser(studentId, courseId);
+        const result = await modelDeleteCourseOfUser(studentId, courseId);
         
         if (result.rowsAffected === 0) {
             return res.status(404).json({ error: 'Course not found' });

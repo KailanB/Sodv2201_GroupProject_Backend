@@ -11,7 +11,12 @@ export const modelGetAllCourses = async () => {
 
     const pool = await poolPromise;
     const result = await pool.request()
-    .query('SELECT * FROM Courses');
+    .query(`SELECT c.CourseID, c.CourseName, c.CourseCode, t.Term, p.ProgramID, p.Credential, d.Department, FORMAT(t.StartDate, 'dd-MM-yyyy') AS 'StartDate',
+            FORMAT(t.EndDate, 'dd-MM-yyyy') AS 'EndDate', c.Description
+            FROM Courses c JOIN Terms t ON c.TermID = t.TermID 
+            JOIN Programs p ON p.ProgramID = c.ProgramID
+            JOIN Departments d ON d.DepartmentID = p.DepartmentID;`
+    );
 
     return result.recordset;
     
@@ -24,16 +29,35 @@ export const modelGetCoursesOfUser = async (id) => {
     const pool = await poolPromise;
     const result = await pool.request()
     .input('id', sql.Int, id)
-    .query(`SELECT c.CourseID, c.CourseName, c.CourseCode, c.TermID, c.ProgramID, c.Description 
-        FROM Courses c JOIN StudentCourses sc ON sc.CourseId = c.CourseID 
-        JOIN Students s ON s.StudentID = sc.StudentID WHERE s.StudentID = @id`);
+    .query(`SELECT c.CourseID, c.CourseName, c.CourseCode, c.TermID, t.Term, c.ProgramID, p.Credential, d.Department, c.Description,  
+            FORMAT(t.StartDate, 'dd-MM-yyyy') AS 'StartDate', FORMAT(t.EndDate, 'dd-MM-yyyy') AS 'EndDate'
+            FROM Courses c JOIN StudentCourses sc ON sc.CourseId = c.CourseID 
+            JOIN Students s ON s.StudentID = sc.StudentID 
+            JOIN Terms t ON c.TermID = t.TermID
+            JOIN Programs p on p.ProgramID = c.ProgramID
+            JOIN Departments d on d.DepartmentID = p.DepartmentID
+            WHERE s.StudentID = @id`);
 
     return result.recordset;
 
 };
 
 
-export const modelDeleteCoursesOfUser = async (studentId, courseId) => {
+
+export const modelAddCourseOfUser = async (studentId, courseId) => {
+
+    const pool = await poolPromise;
+    const result = await pool.request()
+    .input('studentId', sql.Int, studentId)
+    .input('courseId', sql.Int, courseId)
+    .query(`INSERT INTO StudentCourses VALUES(@studentId, @courseId)`);
+
+    return result;
+
+};
+
+
+export const modelDeleteCourseOfUser = async (studentId, courseId) => {
 
     const pool = await poolPromise;
     const result = await pool.request()
