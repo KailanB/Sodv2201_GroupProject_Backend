@@ -6,6 +6,7 @@ import {
 
     modelGetAllCourses,
     modelGetCoursesOfUser,
+    modelDeleteCoursesOfUser,
     modelCreateCourse,
     modelUpdateCourse,
     modelDeleteCourse,
@@ -28,25 +29,41 @@ export const getCourses = async (req, res) => {
 
 // all courses a user has registered to
 export const getCoursesOfUser = async (req, res) => {
-    
+
     const { id  } = req.params;
-    //console.log(id);
-
-    try {
-        const courses = await modelGetCoursesOfUser(id);
-        // await connectToSQL();
-        // const result = await sql.query(
-        //     `SELECT c.CourseID, c.CourseName, c.CourseCode, c.TermID, c.ProgramID, c.Description 
-        //     FROM Courses c JOIN StudentCourses sc ON sc.CourseId = c.CourseID
-        //     JOIN Students s ON s.StudentID = sc.StudentID
-        //     WHERE s.StudentID = ${id}`);
-        // use req.params.userId to find and return courses of user
-        return res.status(201).json(courses);
+    if(id !== 'undefined')
+    {
+        try {
+            const courses = await modelGetCoursesOfUser(id);
+            return res.status(201).json(courses);
+        }
+        catch (err) {
+    
+            console.error('Error retrieving user courses: ' + err);
+            return res.status(500).json({error: 'Failed to retrieve student course data'});
+        }
     }
-    catch (err) {
 
-        console.error('Error retrieving user courses: ' + err);
-        return res.status(500).json({error: 'Failed to retrieve student course data'});
+    
+
+};
+
+export const deleteCoursesOfUser = async (req, res) => {
+    
+    const { studentId, courseId  } = req.params;
+    
+    try {
+        console.log(studentId);
+        const result = await modelDeleteCoursesOfUser(studentId, courseId);
+        
+        if (result.rowsAffected === 0) {
+            return res.status(404).json({ error: 'Course not found' });
+        }
+
+        return res.status(200).json({ message: 'Course deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting course: ' + err);
+        return res.status(500).json({ error: 'Failed to delete course' });
     }
 
 };
