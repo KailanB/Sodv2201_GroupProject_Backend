@@ -10,7 +10,10 @@ export const modelGetAllStudents = async () => {
 
     const pool = await poolPromise;
     const result = await pool.request()
-    .query('SELECT StudentID, FirstName, LastName, Email, PhoneNumber, Birthday, ProgramID, TermID, UserName, StatusID FROM Students');
+    .query(`SELECT StudentID, FirstName, LastName, Email, PhoneNumber, FORMAT(Birthday, 'dd-MM-yyyy') AS Birthday, s.ProgramID, p.Credential, d.Department, s.TermID, t.Term, s.UserName, StatusID 
+        FROM Students s JOIN Terms t ON t.TermID = s.TermID 
+        JOIN Programs p ON p.ProgramID = s.ProgramID
+        JOIN Departments d on d.DepartmentID = p.DepartmentID`);
 
     return result.recordset;
     
