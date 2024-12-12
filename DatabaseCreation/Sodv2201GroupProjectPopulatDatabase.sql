@@ -18,11 +18,11 @@ INSERT INTO Status (Status) VALUES
 ('Admin');
 
 INSERT INTO Programs (DepartmentID, Credential, StartDate, EndDate, Length, Description, Fee, Code) VALUES
-(1, 'Diploma', '2024-09-04', '2024-12-15', '6 months', 'This 2 year diploma course teaches students everything they need to gain a junior developer job. Starting with programming foundation and fundamentals to building full stack web apps, games, and more by completion', 
+(1, 'Diploma', '2024-09-04', '2026-04-17', '2 Years', 'This 2 year diploma course teaches students everything they need to gain a junior developer job. Starting with programming foundation and fundamentals to building full stack web apps, games, and more by completion', 
 50000, 23523),
-(1, 'Certificate', '2024-09-04', '2024-12-15', '6 months', 'Our certificate program offers students a fast track into the world of programming. Focusing on the basics and fundamentals.', 
+(1, 'Certificate', '2024-09-04', '2025-04-27', '8 months', 'Our certificate program offers students a fast track into the world of programming. Focusing on the basics and fundamentals.', 
 30000, 23524),
-(1, 'Post-Diploma', '2024-09-04', '2024-12-15', '6 months', 'The Post-Diploma program takes a junior developers skills to the next level. Tackling new concepts and algorithms.', 
+(1, 'Post-Diploma', '2024-09-04', '2024-04-27', '8 months', 'The Post-Diploma program takes a junior developers skills to the next level. Tackling new concepts and algorithms.', 
 75000, 23525);
 
 
@@ -57,3 +57,8 @@ INSERT INTO StudentCourses (StudentID, CourseID) VALUES
 (3, 7),
 (3, 8),
 (3, 9);
+
+INSERT INTO Messages (FullName, Email, Message) VALUES 
+('Eleanor Shellstrop', 'eleanor@gmail.com', 'Hi I was just wondering if you had a moral philosophy program? If not is your college planning to add one soon?? Regards. Eleanor.'),
+('Adrian Pimento', 'adrianpimento@gmail.com', 'I just found your college! I want to apply to your software development class but I was having trouble registering. I think I applied too many times'),
+('Frito', 'frito@gmail.com', 'Does your college offer scholarships? I really like my money so I do not want to spend that much');
