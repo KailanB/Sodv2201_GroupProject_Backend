@@ -26,6 +26,19 @@ dotenv.config();
 
 const app = express();
 const port = 5000;
+import express from 'express';
+import cors from 'cors';
+
+
+
+// Enable CORS
+app.use(cors({
+  origin: 'http://localhost:3000', 
+  credentials: true // if you need to send cookies
+}));
+
+// other middleware and routes
+// ...
 
 
 // https://stackoverflow.com/questions/18310394/no-access-control-allow-origin-node-apache-port-issue
