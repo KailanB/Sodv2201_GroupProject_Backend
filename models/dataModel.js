@@ -18,7 +18,7 @@ export const modelGetAllPrograms = async () => {
 
     const pool = await poolPromise;
     const result = await pool.request()
-    .query(`SELECT * FROM Programs`);
+    .query(`SELECT ProgramID, Credential FROM Programs`);
 
     return result.recordset;
 };

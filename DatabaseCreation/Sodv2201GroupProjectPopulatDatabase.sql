@@ -6,9 +6,9 @@ GO
 
 INSERT INTO Terms (Term, StartDate, EndDate) VALUES
 ('Fall', '2024-09-04', '2024-12-15'),
-('Winter', '2025-01-09', '2025-04-22'),
-('Spring', '2025-05-04', '2024-07-15'),
-('Summer', '2025-07-26', '2025-08-30');
+('Winter', '2025-01-09', '2025-03-22'),
+('Spring', '2025-03-30', '2024-06-18'),
+('Summer', '2025-06-29', '2025-08-30');
 
 INSERT INTO Departments (Department) VALUES
 ('Software Development');
