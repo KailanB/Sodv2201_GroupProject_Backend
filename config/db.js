@@ -21,6 +21,13 @@ const dbConfig = {
     }
 };
 
+console.log(dbConfig.user);
+console.log(dbConfig.password);
+console.log(dbConfig.server);
+console.log(dbConfig.database);
+console.log(dbConfig.options);
+console.log(dbConfig.authentication);
+
 export const poolPromise = new sql.ConnectionPool(dbConfig)
   .connect()
   .then((pool) => {
