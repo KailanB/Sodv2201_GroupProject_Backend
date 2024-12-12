@@ -99,11 +99,7 @@ export const createCourse = async (req, res) => {
     }
 
     try {
-        // await connectToSQL();
-        // const query = `
-        //     INSERT INTO Courses (CourseName, CourseCode, TermID, ProgramID, Description)
-        //     VALUES (@CourseName, @CourseCode, @TermID, @ProgramID, @Description)
-        // `;
+
         const result = await modelCreateCourse(CourseName, CourseCode, TermID, ProgramID, Description);
 
         if(result.rowsAffected > 0)
@@ -115,19 +111,11 @@ export const createCourse = async (req, res) => {
         {
             return res.status(500).json({message:  `Failed to create course`});
         }
-        // const request = new sql.Request();
-        // request.input('CourseName', sql.NVarChar, CourseName);
-        // request.input('CourseCode', sql.NVarChar, CourseCode);
-        // request.input('TermID', sql.Int, TermID);
-        // request.input('ProgramID', sql.Int, ProgramID);
-        // request.input('Description', sql.NVarChar, Description || null);
-        // await request.query(query);
-
 
         
     } catch (err) {
         console.error('Error creating course: ' + err);
-        return res.status(500).json({ error: 'Failed to create course' });
+        return res.status(500).json({ message: 'Failed to create course' });
     }
 };
 
@@ -142,23 +130,6 @@ export const updateCourse = async (req, res) => {
     }
 
     try {
-        // await connectToSQL();
-        // const query = `
-        //     UPDATE Courses
-        //     SET CourseName = @CourseName,
-        //         CourseCode = @CourseCode,
-        //         TermID = @TermID,
-        //         ProgramID = @ProgramID,
-        //         Description = @Description
-        //     WHERE CourseID = @CourseID
-        // `;
-        // const request = new sql.Request();
-        // request.input('CourseName', sql.NVarChar, CourseName);
-        // request.input('CourseCode', sql.NVarChar, CourseCode);
-        // request.input('TermID', sql.Int, TermID);
-        // request.input('ProgramID', sql.Int, ProgramID);
-        // request.input('Description', sql.NVarChar, Description || null);
-        // request.input('CourseID', sql.Int, id);
 
         const result = await modelUpdateCourse(CourseName, CourseCode, TermID, ProgramID, Description, id);
 
@@ -183,12 +154,6 @@ export const deleteCourse = async (req, res) => {
 
         const result = await modelDeleteCourse(id);
 
-        // await connectToSQL();
-        // const query = 'DELETE FROM Courses WHERE CourseID = @CourseID';
-        // const request = new sql.Request();
-        // request.input('CourseID', sql.Int, id);
-
-        // const result = await request.query(query);
         if (result.rowsAffected[0] === 0) {
             return res.status(404).json({ error: 'Course not found' });
         }
@@ -217,3 +182,5 @@ export const getCoursesOfProgram = async (req, res) => {
     }
 
 };
+
+
