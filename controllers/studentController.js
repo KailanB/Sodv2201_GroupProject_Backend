@@ -84,12 +84,13 @@ export const getStudentWithEmail = async (Email) => {
 export const createStudent = async (req, res) => {
 
    
-    const { FirstName, LastName, Email, Phone, Birthday, Program, 
-        Term, UserName, Password } = req.body;
+    const { FirstName, LastName, Email, Phone, Birthday, ProgramID, 
+        TermID, UserName, Password } = req.body;
     // student status is 1 and we shouldn't need to pass this value from front end
     // as we are not creating any admin accounts
+    console.log(req.body);
     const StatusID = 1;
-    const validationError = studentInputValidation(FirstName, LastName, Email, Phone, Birthday, Program, Term, UserName, Password);
+    const validationError = studentInputValidation(FirstName, LastName, Email, Phone, Birthday, ProgramID, TermID, UserName, Password);
 
     if(validationError)
     {
@@ -116,7 +117,7 @@ export const createStudent = async (req, res) => {
     try {
         const HashedPassword = await bcrypt.hash(Password, 10); 
 
-        await modelCreateStudent(FirstName, LastName, Email, Phone, Birthday, Program, Term, UserName, HashedPassword, StatusID);
+        await modelCreateStudent(FirstName, LastName, Email, Phone, Birthday, ProgramID, TermID, UserName, HashedPassword, StatusID);
         res.status(201).json({message: 'Student created successfully'});
     }
     catch (err) {
