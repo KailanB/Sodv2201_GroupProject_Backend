@@ -27,7 +27,7 @@ export const getPrograms = async (req, res) => {
 export const getProgramWithId = async (req, res) => {
 
     const { id } = req.params;
-    console.log(id);
+
     try {
         const program = await modelGetAllProgramsWithId(id);
         return res.status(200).json(program);
