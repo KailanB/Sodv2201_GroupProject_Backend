@@ -6,6 +6,9 @@ import courseRoutes from './routes/courseRoutes.js';
 import programRoutes from './routes/programRoutes.js';
 import loginRoutes from './routes/loginRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import dataRoutes from './routes/dataRoutes.js';
+import cors from 'cors';
+
 
 // also took these from the example app.js file
 //import path from 'path';
@@ -26,12 +29,11 @@ dotenv.config();
 
 const app = express();
 const port = 5000;
-// import express from 'express';
-// import cors from 'cors';
 
 
 
-// // Enable CORS
+
+// Enable CORS
 // app.use(cors({
 //   origin: 'http://localhost:3000', 
 //   credentials: true // if you need to send cookies
@@ -70,6 +72,7 @@ app.use('/api', programRoutes);
 
 app.use('/api', loginRoutes);
 app.use('/api', adminRoutes);
+app.use('/api', dataRoutes);
 
 
 // app.get('/', (req, res) => {
