@@ -15,7 +15,7 @@ export const login = async (req, res) => {
     
     const { Email, Password } = req.body;
 
-    //console.log("Email: " + Email + " Password: " + Password);
+    console.log("Email: " + Email + " Password: " + Password);
 
     if (!Email || !Password) {
         
